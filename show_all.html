@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selected news</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .data-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .image-item {
+            position: relative;
+            width: 350px; /* 修改部分：限制每个图片容器的宽度 */
+            overflow: hidden;
+            border: 1px solid #ddd;
+            padding: 5px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .image-item img {
+            width: 100%; /* 修改部分：设置图片宽度为容器宽度的100% */
+            height: auto; /* 修改部分：确保高度自动调整，保持图片比例 */
+            object-fit: cover;
+        }
+        .caption {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .images {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .images_extra {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            /* gap: 10px; */
+            width: 200px;
+        }
+        .images img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        .section h2 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #555;
+        }
+        .section p {
+            margin: 0;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        .navigation {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .navigation button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .navigation button:hover {
+            background-color: #0056b3;
+        }
+        .highlight {
+            color: red;
+            font-weight: bold;
+        }
+        /* Existing styles */
+        .delete-button {
+            background-color: red;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .delete-button:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Existing content -->
+        <div class="navigation">
+            <button onclick="prevPage()">上一页</button>
+            <button onclick="nextPage()">下一页</button>
+        </div>
+        <div class="section">
+            <h2 style="color: blue; display: inline;"> Title: </h2>
+            <p id="title" style="display: inline;"></p>
+        </div>
+        <div class="section">
+            <h2 style="color: blue; display: inline;"> Author: </h2>
+            <p id="author" style="display: inline;"></p>
+        </div>
+        <div class="section">
+            <h2 style="color: blue; display: inline;"> Time: </h2>
+            <p id="time" style="display: inline;"></p>
+        </div>
+        <div class="section">
+            <h2 style="color: blue; display: inline;"> Main object: </h2>
+            <p id="main_object" style="display: inline;"></p>
+        </div>
+        <div class="section">
+            <h2 style="color: blue; display: inline;"> Content: </h2>
+            <p id="content" style="display: inline;"></p>
+        </div>
+        <div class="section">
+            <h2 style="color: blue;">中文</h2>
+            <p id="chinese"></p>
+        </div>
+        <!-- <div class="images" id="images"></div> -->
+        <!-- <h1>Image Gallery from JSONL</h1> -->
+        <div id="images" class="data-container"></div>
+        <div class="section">
+            <h2 style="color: green; display: inline;">News score: </h2>
+            <p id="news_score" style="display: inline;"></p>
+        </div>
+        <div class="section">
+            <h2 style="color: green; display: inline;">News score reason: </h2>
+            <p id="news_reason" style="display: inline;"></p>
+        </div>
+        <div>
+            <h2 style="color: green;">完整新闻</h2>
+            <p id="news_ori" style="display: inline;"></p>
+        </div>
+
+        
+    </div>
+
+    <script>
+        let currentPage = 0;
+        let data = [];
+       
+        async function loadData() {
+            // const response = await fetch('re_new/MMpedia_select_1_text_process2.jsonl');
+            // const response = await fetch('new_start/MMpedia_real_final_process_type_short_description_img_edit_edit_text_mm_question_one_hop_process_input_prompt_question_img_one_hop_type.jsonl');
+            const response = await fetch('news/show_all.jsonl');
+
+
+            const text = await response.text();
+            data = text.trim().split('\n').map(line => JSON.parse(line));
+            
+            // Get the starting index from the URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const startIndex = parseInt(urlParams.get('start'), 10);
+            if (!isNaN(startIndex) && startIndex >= 0 && startIndex < data.length) {
+                currentPage = startIndex;
+            }
+            
+            displayPage(currentPage);
+        }
+
+
+        // function displayPage(page) {
+        //     if (page < 0 || page >= data.length) return;
+
+        //     const item = data[page];
+
+        //     const imagesContainer = document.getElementById('images');
+        //     imagesContainer.innerHTML = '';
+        //     item.local_img_path.forEach((src, index) => {
+        //         const imgContainer = document.createElement('div');
+        //         imgContainer.style.position = 'relative';
+
+        //         const img = document.createElement('img');
+        //         img.src = src;
+        //         img.alt = `Image ${index + 1}`;
+        //         // img.style.width = '100%';
+        //         img.style.height = 'auto';
+        //         img.onerror = () => {
+        //             console.error(`Failed to load image: ${src}`);
+        //             img.src = 'placeholder.jpg'; // Placeholder image
+        //         };
+
+        //         imgContainer.appendChild(img);
+        //         imagesContainer.appendChild(imgContainer);
+        //     });
+
+
+        function displayPage(page) {
+            if (page < 0 || page >= data.length) return;
+
+            const item = data[page];
+            const imagesContainer = document.getElementById('images');
+            imagesContainer.innerHTML = ''; // 清空内容
+
+            // // 创建标题和描述
+            // const title = document.createElement('h2');
+            // title.textContent = item.title || 'Image Collection'; // 默认标题
+            // imagesContainer.appendChild(title);
+
+            // const description = document.createElement('p');
+            // description.textContent = item.description || 'No description available';
+            // imagesContainer.appendChild(description);
+
+            // 创建图片列表
+            const imageList = document.createElement('div');
+            imageList.className = 'image-container';
+            item.local_img_path.forEach((src, index) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'image-item';
+
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = `Image ${index + 1}`;
+                img.onerror = () => {
+                    console.error(`Failed to load image: ${src}`);
+                    img.src = 'placeholder.jpg'; // Placeholder image
+                };
+
+                const caption = document.createElement('div');
+                caption.className = 'caption';
+                caption.textContent = item.new_desp[index] ? item.new_desp[index] : `Image ${index + 1}`;
+
+                const scoreValue = item.match_score && item.match_score[src] ? item.match_score[src] : 'N/A';
+                const score = document.createElement('div');
+                score.className = 'score';
+                score.textContent = `Score: ${scoreValue}`;
+
+                // 使用图像路径作为key从explanations字典中获取评分解释
+                const explanationText = item.match_reason && item.match_reason[src] ? item.match_reason[src] : 'No explanation available';
+                const explanation = document.createElement('div');
+                explanation.className = 'explanation';
+                explanation.textContent = explanationText;
+
+
+                imgContainer.appendChild(img);
+                imgContainer.appendChild(caption);
+                imgContainer.appendChild(score);
+                imgContainer.appendChild(explanation);
+                imageList.appendChild(imgContainer);
+            });
+
+            imagesContainer.appendChild(imageList);
+        
+
+            document.getElementById('title').innerText = item.title;
+            document.getElementById('author').innerText = item.author;
+            document.getElementById('time').innerText = item.time;
+            document.getElementById('main_object').innerText = item.main_object;
+            document.getElementById('content').innerText = item.summ;
+            document.getElementById('chinese').innerText = item.chinese;
+            // document.getElementById('pred_type').innerText = item.type_self;
+
+            document.getElementById('news_score').innerText = item.score;
+            document.getElementById('news_reason').innerText = item.reason;
+            document.getElementById('news_ori').innerText = item.show;
+
+
+            // document.getElementById('highlight').innerHTML ="<br><span style='color: green;'>Highlight edit: </span>" + "<span style='color: red;'>" + item.highlight + "</span>";
+            
+            // document.getElementById('text-question').innerText = item.text_question;
+            // document.getElementById('image-question').innerText = item.image_question;
+            // document.getElementById('dynamic-image').src = item.training_imgs_edit[0];
+
+            // document.getElementById('image-question_g').innerText = item.image_question;
+            // document.getElementById('dynamic-image_g').src = item.generalization_imgs_edit;
+
+            // document.getElementById('one_hop_combine').innerText = item.one_hop_all;
+            // document.getElementById('one_hop_explnation').innerText = item.one_hop_explanation;
+            // document.getElementById('dynamic-image_p').src = item.question_imgs_edit;
+        }
+
+        function deleteImage(index) {
+            data[currentPage].imgs.splice(index, 1);
+            displayPage(currentPage);
+        }
+
+        function deleteCurrentData() {
+            toDelete.add(currentPage);
+            nextPage(); // Move to next page after deletion
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                displayPage(currentPage);
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < data.length - 1) {
+                currentPage++;
+                displayPage(currentPage);
+            }
+        }
+
+        window.onload = loadData;
+        
+    </script>
+</body>
+</html>
