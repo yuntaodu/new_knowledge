@@ -16,27 +16,7 @@ data example
           "Upper1": "City",
           "Question1": "In which city did the terrorist act occur, as shown in the image?",
           "Answer1": "Sydney"
-      },
-      "EUQA2": {
-          "Entity2": "Bishop Mar Mari Emmanuel",
-          "Upper2": "Religious Figure",
-          "Question2": "Who is the religious figure in the image injured during the livestreamed service?",
-          "Answer2": "Bishop Mar Mari Emmanuel"
-      },
-      "EUQA3": {
-          "Entity3": "New South Wales Police",
-          "Upper3": "Organization",
-          "Question3": "Which organization's representative, depicted in the image, condemned the riot chaos?",
-          "Answer3": "New South Wales Police"
-      },
-      "EUQA4": {
-          "Entity4": "Karen Webb",
-          "Upper4": "Person",
-          "Question4": "Who is the person in the image that condemned the chaos outside the church?",
-          "Answer4": "Karen Webb"
       }
-  }
-  
 ]
 
 
