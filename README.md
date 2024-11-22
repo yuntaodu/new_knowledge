@@ -20,9 +20,9 @@
 4. 每条数据的imgs，根据url，把图像下载到本地 [使用CNN_Data_Collection/download_img.py]  
 5. 每条数据的imgs，选取第一张img，作为training img [使用CNN_Data_Collection/extract_1_img.py]  
 6. 给每条数据增加index [使用CNN_Data_Collection/add_index.py]  
-**7. 使用title和content，生成summary和entity（使用api） [使用CNN_Data_Collection/summary.py]**
+7. 使用title和content，生成summary和entity（使用api） [使用CNN_Data_Collection/summary.py]
 8. 给summary的开头，加上timestamp [使用CNN_Data_Collection/time.py + add_time.py]  
-**9. 使用entity和summary，生成QA（使用api） [使用CNN_Data_Collection/question_generation.py]**  
+9. 使用entity和summary，生成QA（使用api） [使用CNN_Data_Collection/question_generation.py] 
 10. 根据生成的QA中的entity和upper word下载图像 [使用CNN_Data_Collection/download_EUQA_img.py]  
 11. 使用clip和k-means去剔除离群点图像 [使用CNN_Data_Collection/clip_k_means_filter_img.py]  
 
