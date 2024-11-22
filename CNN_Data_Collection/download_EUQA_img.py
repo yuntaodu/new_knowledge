@@ -4,6 +4,24 @@ import os
 import json
 import time
 
+
+
+'''
+data example
+[
+  "EUQA": {
+      "EUQA1": {
+          "Entity1": "Sydney",
+          "Upper1": "City",
+          "Question1": "In which city did the terrorist act occur, as shown in the image?",
+          "Answer1": "Sydney"
+      }
+  }
+]
+'''
+
+
+
 header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'
 }
